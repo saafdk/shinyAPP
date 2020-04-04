@@ -5,23 +5,84 @@ date: "4/4/2020"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
+# Reading the libraries
+```{r setup, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+library(tidyverse)
 ```
 
-## R Markdown
+# Example 1: Hello shiny
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+### Defining the user interface for the app
+```{r, echo=FALSE}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# Define UI for app that draws a histogram ----
+ui <- fluidPage(
 
-```{r cars}
-summary(cars)
+  # App title ----
+  titlePanel("Hello Shiny!"),
+
+  # Sidebar layout with input and output definitions ----
+  sidebarLayout(
+
+    # Sidebar panel for inputs ----
+    sidebarPanel(
+
+      # Input: Slider for the number of bins ----
+      sliderInput(inputId = "bins",
+                  label = "Number of bins:",
+                  min = 1,
+                  max = 50,
+                  value = 30)
+
+    ),
+
+    # Main panel for displaying outputs ----
+    mainPanel(
+
+      # Output: Histogram ----
+      plotOutput(outputId = "distPlot")
+
+    )
+  )
+)
 ```
 
-## Including Plots
+### Defining the server
+```{r, echo=FALSE}
 
-You can also embed plots, for example:
+# Define server logic required to draw a histogram ----
+server <- function(input, output) {
+
+  # Histogram of the Old Faithful Geyser Data ----
+  # with requested number of bins
+  # This expression that generates a histogram is wrapped in a call
+  # to renderPlot to indicate that:
+  #
+  # 1. It is "reactive" and therefore should be automatically
+  #    re-executed when inputs (input$bins) change
+  # 2. Its output type is a plot
+  output$distPlot <- renderPlot({
+
+    x    <- faithful$waiting
+    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+
+    hist(x, breaks = bins, col = "#75AADB", border = "white",
+         xlab = "Waiting time to next eruption (in mins)",
+         main = "Histogram of waiting times")
+
+    })
+
+}
+
+```
+
+
+
+
+# Example 2: Shiny text
+
 
 ```{r pressure, echo=FALSE}
 plot(pressure)
