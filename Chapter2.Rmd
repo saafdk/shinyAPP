@@ -1,0 +1,102 @@
+---
+title: "Chapter2"
+author: "Stanley"
+date: "9/4/2020"
+output: pdf_document
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+```
+
+
+## 2.2
+```{r cars}
+ui <- fluidPage(
+  "Hello, world!"
+)
+server <- function(input, output, session) {
+}
+
+shinyApp(ui, server)
+```
+
+## 2.4: Adding UI controls
+```{r}
+
+ui <- fluidPage( #fluidPage er basic layout
+  
+  # selectInput er der hvor datasættet indlæses
+  selectInput("dataset", label = "Dataset", choices = ls("package:datasets")),
+  
+  # denne display koden
+  verbatimTextOutput("summary"),
+  
+  # denne viser en tabel
+  tableOutput("table")
+)
+
+# Her viser vi resultatet af UI, dog er det kun input
+shinyApp(ui, server)
+
+
+############ Vi tilføjer nu hvordan shiny skal foretage beregniner
+
+server <- function(input, output, session) {
+  
+  # Her laves en summary
+  output$summary <- renderPrint({
+    dataset <- get(input$dataset, "package:datasets")
+    summary(dataset)
+  })
+  
+  # Her laves der en tabel
+  output$table <- renderTable({
+    dataset <- get(input$dataset, "package:datasets")
+    dataset
+  })
+}
+
+# Vi kører app'en igen, nu med nye output
+shinyApp(ui, server)
+
+
+```
+
+## 2.6: Removing duplicates
+```{r, echo=FALSE}
+
+
+########## Her kører vi input kun én gang inden for koden, og kan genbruge det
+
+
+# storing to the server with the data set included
+server <- function(input, output, session) {
+  
+  # Getting the data set for the input
+  dataset <- reactive({
+    get(input$dataset, "package:datasets")
+  })
+
+  # Defining the output summary of the dataset
+  output$summary <- renderPrint({
+    summary(dataset())
+  })
+  
+  # Defining the table of the data set
+  output$table <- renderTable({
+    dataset()
+  })
+}
+
+# Vi kører app'en igen, og hvor input er blevet "stored"
+shinyApp(ui, server)
+
+
+```
+
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
