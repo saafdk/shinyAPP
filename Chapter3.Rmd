@@ -116,7 +116,189 @@ ui <- fluidPage(
 
 
 # 3.3: Outputs
+```{r}
 
+# bemærk at textOutput tager "text" som input, og svarer til den i server hvor der står output$text. Ligeledes tager "verbatimTextOutput", "code" som input, svarende til "output$code".
+
+ui <- fluidPage(
+  textOutput("text"),
+  verbatimTextOutput("code")
+)
+
+# 
+server <- function(input, output, session) {
+  output$text <- renderText({ 
+    "Hello friend!" 
+  })
+  output$code <- renderPrint({ 
+    summary(1:10) 
+  })
+}
+
+shinyApp(ui, server)
+
+### Alternativt til server objektet kan skrives som
+
+server <- function(input, output, session) {
+  output$text <- renderText("Hello friend!")
+  output$code <- renderPrint(summary(1:10))
+}
+
+```
+
+## 3.3.2: Tables
+```{r}
+
+# tableOutput for små og statiske, mens dataTableOutput er for den komplette datasæt og er mere dynamisk
+ui <- fluidPage(
+  tableOutput("static"),
+  dataTableOutput("dynamic")
+)
+
+server <- function(input, output, session) {
+  output$static <- renderTable(head(mtcars))
+  output$dynamic <- renderDataTable(mtcars, options = list(pageLength = 5))
+}
+
+shinyApp(ui,server)
+
+```
+
+## 3.3.3: Plots
+```{r}
+ui <- fluidPage(
+  plotOutput("plot", width = "400px")
+)
+
+# bemærk; plot(1:5), kan man også bruge ggplot
+server <- function(input, output, session) {
+  output$plot <- renderPlot(plot(1:5))
+}
+
+shinyApp(ui,server)
+
+
+```
+
+# Layouts
+
+## 3.4.3: Page with sidebar
+```{r}
+
+fluidPage(
+  titlePanel(
+    "Test med page with sidebar"
+  ),
+  sidebarLayout(
+    sidebarPanel(
+      "# inputs"
+    ),
+    mainPanel(
+      "# outputs"
+    )
+  )
+)
+
+
+### Demonstrating CLT
+
+ui <- fluidPage(
+  headerPanel("Central limit theorem"),
+  sidebarLayout(
+    sidebarPanel(
+      numericInput("m", "Number of samples:", 2, min = 1, max = 100)
+    ),
+    mainPanel(
+      plotOutput("hist")
+    )
+  )
+)
+
+
+server <- function(input, output, session) {
+  output$hist <- renderPlot({
+    means <- replicate(1e4, mean(runif(input$m)))
+    hist(means, breaks = 20)
+  })
+}
+
+shinyApp(ui,server)
+
+```
+
+## 3.4.4: Multi-row
+```{r}
+
+# Første argument efter column(), er bredde-størrelse, og man kan have flere columns, men summen skal udgøre 12
+
+fluidPage(
+  fluidRow(
+    column(4, 
+      "column 4"
+    ),
+    column(8, 
+      "column 8"
+    )
+  ),
+  fluidRow(
+    column(6, 
+      "column 6"
+    ),
+    column(6, 
+      "column 6"
+    )
+  )
+)
+```
+
+## 3.4.5: Themes
+```{r}
+theme_demo <- function(theme) {
+  fluidPage(
+    theme = shinythemes::shinytheme(theme),
+    sidebarLayout(
+      sidebarPanel(
+        textInput("txt", "Text input:", "text here"),
+        sliderInput("slider", "Slider input:", 1, 100, 30)
+      ),
+      mainPanel(
+        h1("Header 1"),
+        h2("Header 2"),
+        p("Some text")
+      )
+    )
+  )
+}
+
+# sådan kaldes de forskellige theme, men de vises ikke her i markdown ordentligt
+theme_demo("darkly")
+theme_demo("flatly")
+theme_demo("sandstone")
+theme_demo("united")
+
+```
+
+# 3.5: Under the hood
+
+
+## fluidPage laver HTML, CSS og JavaScript
+```{r}
+
+fluidPage(
+  textInput("name", "What's your name?")
+)
+
+# Ovenstående kode svarer til HTML:
+
+#<div class="container-fluid">
+#  <div class="form-group shiny-input-container">
+#    <label for="name">What's your name?</label>
+#    <input id="name" type="text" class="form-control" value=""/>
+#  </div>
+#</div>
+
+
+```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
