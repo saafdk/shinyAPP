@@ -1,0 +1,122 @@
+---
+title: "Chapter3"
+author: "Stanley"
+date: "9/4/2020"
+output: pdf_document
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+```
+
+# Inputs
+
+## 3.2.2: Free text input
+```{r}
+
+# see textInput
+ui <- fluidPage(
+  textInput("name", "What's your name?"),
+  passwordInput("password", "What's your password?"),
+  textAreaInput("story", "Tell me about yourself", rows = 3)
+)
+
+
+```
+
+## 3.2.3: Numeric input
+```{r}
+
+# see numericInput
+ui <- fluidPage(
+  numericInput("num", "Number one", value = 0, min = 0, max = 100),
+  sliderInput("num2", "Number two", value = 50, min = 0, max = 100),
+  sliderInput("rng", "Range", value = c(10, 20), min = 0, max = 100)
+)
+
+```
+
+## 3.2.4: Date input
+```{r}
+
+# Bemærk dateInput og evt. "range"
+ui <- fluidPage(
+  dateInput("dob", "When were you born?"),
+  dateRangeInput("holiday", "When do you want to go on vacation next?")
+)
+```
+
+## 3.2.5: Limited options
+```{r}
+# animals definerer valgmulighederne til radioButtons
+animals <- c("dog", "cat", "mouse", "bird", "other", "I hate animals")
+
+# selectInput kan man vælge mellem forskellige valgmuligheder
+ui <- fluidPage(
+  selectInput("state", "What's your favourite state?", state.name),
+  radioButtons("animal", "What's your favourite animal?", animals)
+)
+
+
+##### Making radiobuttons with features
+
+ui <- fluidPage(
+  radioButtons("rb", "Choose one:",
+    choiceNames = list(
+      icon("angry"),
+      icon("smile"),
+      icon("sad-tear")
+    ),
+    choiceValues = list("angry", "happy", "sad")
+  )
+)
+
+# Mulighed for at tilvælge flere valgmuligheder
+ui <- fluidPage(
+  selectInput(
+    "state", "What's your favourite state?", state.name,
+    multiple = TRUE
+  )
+)
+
+# For buttons kan man vælge flere muligheder vha. checkbox
+ui <- fluidPage(
+  checkboxGroupInput("animal", "What animals do you like?", animals)
+)
+
+### ^ovenstående bruger "checkboxGroupInput", mens nedenunder bruger "checkboxInput", altså uden "Group"
+
+# Binær valgmuligheder
+ui <- fluidPage(
+  checkboxInput("cleanup", "Clean up?", value = TRUE),
+  checkboxInput("shutdown", "Shutdown?")
+)
+```
+
+## 3.2.6: Upload en fil
+```{r}
+# Man kan også vælge at uploade en fil
+ui <- fluidPage(
+  fileInput("upload", NULL)
+)
+
+```
+
+## 3.2.7: Action button
+```{r}
+
+# Skal parres med "observeEvent()" eller "eventReactive()"
+
+ui <- fluidPage(
+  actionButton("click", "Click me!"),
+  actionButton("drink", "Drink me!", icon = icon("cocktail"))
+)
+```
+
+
+# 3.3: Outputs
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
